@@ -91,3 +91,4 @@ Runtimedata.phi
 
 .venv
 build*/
+!tests/data/*

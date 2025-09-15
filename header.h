@@ -9,7 +9,7 @@
 #define useFFTfit
 
 ! Scalar equations
-#define nPhi 0
+#define nPhi 2
 !#define phiNeumann
 
 ! half or full channel

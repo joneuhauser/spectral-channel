@@ -692,7 +692,7 @@ MODULE dnsdata
   !-------------------- read_restart_file -----------------------! 
   SUBROUTINE read_restart_file(filename,R)
     complex(C_DOUBLE_COMPLEX), intent(INOUT) :: R(ny0-2:nyN+2,-nz:nz,nx0:nxN,1:3+nPhi)
-    character(len=40), intent(IN) :: filename
+    character(len=*), intent(IN) :: filename
     integer(C_SIZE_T) :: ix,iy,iz,io,iPhi
     integer(C_INT) :: r_nx, r_ny, r_nz
     real(C_DOUBLE) :: r_alfa0,r_beta0,r_ni,r_a,r_ymin,r_ymax
@@ -718,14 +718,6 @@ MODULE dnsdata
         IF (has_terminal) PRINT *, nx, ny, nz, alfa0, beta0, ni, a, ymin, ymax
         STOP
       END IF
-      DO iPhi=1,nPhi
-         R(:,:,:,3+iPhi)=0
-         IF (has_average) THEN
-            DO CONCURRENT (iy=ny0-2:nyN+2)
-              R(iy,0,0,3+iPhi)=3*0.5*y(iy)*(2-y(iy))
-            END DO
-         END IF
-      END DO
     ELSE
       CLOSE(100)
       R=0
@@ -849,11 +841,13 @@ MODULE dnsdata
   !-------------------- save_restart_file -----------------------!
   SUBROUTINE save_restart_file(filename,R)
     complex(C_DOUBLE_COMPLEX), intent(in) :: R(ny0-2:nyN+2,-nz:nz,nx0:nxN,1:3)
-    character(len=40), intent(in) :: filename
+    character(len=*), intent(in) :: filename
     ! mpi stuff
     TYPE(MPI_File) :: fh
     INTEGER(MPI_OFFSET_KIND) :: disp 
     TYPE(MPI_Status) :: status
+
+    WRITE(*,*) "Writing Dati.cart.out at time ", time
     
     ! open file
     CALL MPI_File_open(MPI_COMM_WORLD, TRIM(filename), IOR(MPI_MODE_WRONLY, MPI_MODE_CREATE), MPI_INFO_NULL, fh) 
@@ -918,7 +912,6 @@ MODULE dnsdata
    runtime_global=0
    IF (dt_save > 0) THEN ! save restart file
      IF ( ((FLOOR((time+0.5*deltat)/dt_save) > FLOOR((time-0.5*deltat)/dt_save)) .AND. (istep>1))) THEN
-       IF (has_terminal) WRITE(*,*) "Writing Dati.cart.out at time ", time
        filename="Dati.cart.out";  CALL save_restart_file(filename,V)
      END IF
 #ifdef ibm
