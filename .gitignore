@@ -88,3 +88,6 @@ dkms.conf
 # Other files
 Runtimedata
 Runtimedata.phi
+
+.venv
+build*/

@@ -96,18 +96,19 @@ MODULE dnsdata
 
   !--------------------------------------------------------------!
   !---------------------- Read input files ----------------------!
-  SUBROUTINE read_dnsin(in_in_parent)
+  SUBROUTINE read_dnsin(filename, in_in_parent)
     logical, optional, intent(in) :: in_in_parent
+    CHARACTER(len=*), INTENT(IN) :: filename
     logical :: i
     integer :: iPhi
     if (present(in_in_parent)) then
       if (in_in_parent) then
         OPEN(15, file='../dns.in')
       else
-        OPEN(15, file='dns.in')
+        OPEN(15, file=filename)
       end if
     else
-      OPEN(15, file='dns.in')
+      OPEN(15, file=filename)
     end if
     READ(15, *) nx, ny, nz; READ(15, *) alfa0, beta0; nxd=3*(nx+1)/2;nzd=3*nz
 #ifdef useFFTfit
